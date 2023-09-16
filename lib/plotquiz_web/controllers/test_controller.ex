@@ -58,7 +58,7 @@ defmodule PlotquizWeb.TestController do
 
   def handle_info(:tick, socket) do
     cond do
-      socket.assigns.lives == 0 ->
+      socket.assigns.timer == 0 ->
         :timer.cancel(socket.assigns.t)
 
         {:noreply,
