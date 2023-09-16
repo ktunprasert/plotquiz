@@ -19,7 +19,9 @@ defmodule PlotquizWeb.TestController do
     ~H"""
     <div phx-window-keyup="update_guess">
 
-    <pre class={"grid h-[40vh] place-items-center text-center tracking-[5px]"}><%= @hint %></pre>
+    <pre class={"grid h-[40vh] place-items-center text-center tracking-[5px]"}><%= @hint %>
+    <code><%= @guesses |> MapSet.to_list() |> Enum.join(", ")  %></code>
+    </pre>
 
     <div class={"grid w-full place-items-center text-center"}>
         <blockquote><%= @quiz.genres |> Enum.join(", ") %></blockquote>
