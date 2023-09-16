@@ -101,9 +101,9 @@ defmodule PlotquizWeb.TestController do
 
     lives =
       if new_guesses == socket.assigns.guesses do
-        socket.assigns.lives - 1
-      else
         socket.assigns.lives
+      else
+        socket.assigns.lives - 1
       end
 
     hint =
