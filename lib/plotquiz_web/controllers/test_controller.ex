@@ -10,26 +10,34 @@ defmodule PlotquizWeb.TestController do
     ~H"""
     <div phx-window-keyup="update_guess">
 
-      <pre class={"grid h-[100vh] place-items-center text-center tracking-[5px]"}>
-        <%= @hint %>
+    <pre class={"grid h-[40vh] place-items-center text-center tracking-[5px]"}><%= @hint %></pre>
+
+    <div class={"grid w-full place-items-center text-center"}>
+        <blockquote><%= @quiz.genres |> Enum.join(", ") %></blockquote>
+
+        Your guess [<%= @guess %>]
         <br/>
-        Your guess <%= @guess %>
-      </pre>
+        Total rounds: <%= @rounds %>
+    </div>
 
     </div>
     """
   end
 
   def mount(params, %{}, socket) do
-    answer = params["id"] |> Movie.get_quiz!() |> then(& &1.name) |> String.downcase()
+    quiz = Movie.get_quiz!(params["id"])
+
+    answer = quiz.name |> String.downcase()
 
     {:ok,
      assign(
        socket,
        hint: answer |> update_hint(@guesses),
        answer: answer,
+       quiz: quiz,
        guess: "",
-       guesses: @guesses
+       guesses: @guesses,
+       rounds: 0
      )}
   end
 
@@ -42,15 +50,29 @@ defmodule PlotquizWeb.TestController do
   end
 
   defp update_guess(value, socket) do
-    guesses =
+    new_guesses =
       socket.assigns.guesses
       |> MapSet.put(value)
 
+    rounds =
+      cond do
+        new_guesses == socket.assigns.guesses ->
+          socket.assigns.rounds
+
+        true ->
+          socket.assigns.rounds + 1
+      end
+
     hint =
       socket.assigns.answer
-      |> update_hint(guesses)
+      |> update_hint(new_guesses)
 
-    assign(socket, hint: hint, guesses: guesses, guess: value)
+    assign(socket,
+      hint: hint,
+      guesses: new_guesses,
+      guess: value,
+      rounds: rounds
+    )
   end
 
   defp update_hint(text, set) do
