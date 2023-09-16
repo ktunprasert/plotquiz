@@ -5,6 +5,15 @@ defmodule PlotquizWeb.TestController do
   alias Plotquiz.Movie.Quiz
 
   @guesses MapSet.new()
+  @time_between_guesses 5
+
+  def render(%{lives: 0} = assigns) do
+    :timer.cancel(assigns.t)
+
+    ~H"""
+    You are dead
+    """
+  end
 
   def render(assigns) do
     ~H"""
@@ -17,7 +26,9 @@ defmodule PlotquizWeb.TestController do
 
         Your guess [<%= @guess %>]
         <br/>
-        Total rounds: <%= @rounds %>
+        Total lives: <%= @lives %>
+        <br/>
+        Timer: <%= @timer %> seconds
     </div>
 
     </div>
@@ -37,8 +48,36 @@ defmodule PlotquizWeb.TestController do
        quiz: quiz,
        guess: "",
        guesses: @guesses,
-       rounds: 0
+       timer: @time_between_guesses,
+       t: timer_start(),
+       lives: min(15, String.length(answer))
      )}
+  end
+
+  def handle_info(:tick, socket) do
+    cond do
+      socket.assigns.lives == 0 ->
+        :timer.cancel(socket.assigns.t)
+
+        {:noreply,
+         assign(socket,
+           lives: socket.assigns.lives - 1,
+           timer: @time_between_guesses,
+           t: timer_start()
+         )}
+
+      socket.assigns.answer == socket.assigns.hint ->
+        :timer.cancel(socket.assigns.t)
+
+        {:noreply,
+         assign(socket,
+           lives: socket.assigns.lives,
+           timer: @time_between_guesses
+         )}
+
+      true ->
+        {:noreply, assign(socket, timer: socket.assigns.timer - 1)}
+    end
   end
 
   def handle_event("update_guess", %{"key" => value}, socket) do
@@ -49,29 +88,35 @@ defmodule PlotquizWeb.TestController do
     end
   end
 
+  defp timer_start() do
+    :timer.send_interval(1_000, self(), :tick) |> elem(1)
+  end
+
   defp update_guess(value, socket) do
     new_guesses =
       socket.assigns.guesses
       |> MapSet.put(value)
 
-    rounds =
-      cond do
-        new_guesses == socket.assigns.guesses ->
-          socket.assigns.rounds
-
-        true ->
-          socket.assigns.rounds + 1
+    lives =
+      if new_guesses == socket.assigns.guesses do
+        socket.assigns.lives - 1
+      else
+        socket.assigns.lives
       end
 
     hint =
       socket.assigns.answer
       |> update_hint(new_guesses)
 
+    :timer.cancel(socket.assigns.t)
+
     assign(socket,
       hint: hint,
       guesses: new_guesses,
       guess: value,
-      rounds: rounds
+      timer: @time_between_guesses,
+      t: timer_start(),
+      lives: lives
     )
   end
 
