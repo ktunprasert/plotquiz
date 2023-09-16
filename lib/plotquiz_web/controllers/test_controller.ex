@@ -52,7 +52,7 @@ defmodule PlotquizWeb.TestController do
        guesses: @guesses,
        timer: @time_between_guesses,
        t: timer_start(),
-       lives: min(15, String.length(answer))
+       lives: min(15, String.length(answer) + 3)
      )}
   end
 
