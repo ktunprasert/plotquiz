@@ -34,7 +34,7 @@ defmodule PlotquizWeb.TestController do
   end
 
   def handle_event("update_guess", %{"key" => value}, socket) do
-    if value in ~w(a b c d e f g h i j k l m n o p q r s t u v w x y z) do
+    if is_legal(value) do
       {:noreply, update_guess(value, socket)}
     else
       {:noreply, socket}
@@ -55,12 +55,22 @@ defmodule PlotquizWeb.TestController do
 
   defp update_hint(text, set) do
     for letter <- text |> String.split("", trim: true) do
-      if MapSet.member?(set, letter) do
-        letter
-      else
-        "_"
+      cond do
+        is_legal(letter) ->
+          if MapSet.member?(set, letter) do
+            letter
+          else
+            "_"
+          end
+
+        true ->
+          letter
       end
     end
     |> Enum.join()
+  end
+
+  defp is_legal(char) do
+    char in ~w(a b c d e f g h i j k l m n o p q r s t u v w x y z)
   end
 end
