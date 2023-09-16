@@ -18,6 +18,7 @@ defmodule PlotquizWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    live "/test/:id", TestController
   end
 
   # Other scopes may use custom stacks.
