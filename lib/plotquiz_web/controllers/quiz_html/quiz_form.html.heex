@@ -1,0 +1,28 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:name]} type="text" label="Name" />
+  <.input
+    field={f[:genres]}
+    type="select"
+    multiple
+    label="Genres"
+    options={[{"Option 1", "option1"}, {"Option 2", "option2"}]}
+  />
+  <.input field={f[:description]} type="text" label="Description" />
+  <.input field={f[:imdb_rating]} type="text" label="Imdb rating" />
+  <.input field={f[:rt_rating]} type="text" label="Rt rating" />
+  <.input field={f[:release_year]} type="number" label="Release year" />
+  <.input field={f[:country_of_origin]} type="text" label="Country of origin" />
+  <.input
+    field={f[:actors]}
+    type="select"
+    multiple
+    label="Actors"
+    options={[{"Option 1", "option1"}, {"Option 2", "option2"}]}
+  />
+  <:actions>
+    <.button>Save Quiz</.button>
+  </:actions>
+</.simple_form>

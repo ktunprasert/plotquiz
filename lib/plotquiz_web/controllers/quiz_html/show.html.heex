@@ -1,0 +1,22 @@
+<.header>
+  Quiz <%= @quiz.id %>
+  <:subtitle>This is a quiz record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/movie/#{@quiz}/edit"}>
+      <.button>Edit quiz</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @quiz.name %></:item>
+  <:item title="Genres"><%= @quiz.genres %></:item>
+  <:item title="Description"><%= @quiz.description %></:item>
+  <:item title="Imdb rating"><%= @quiz.imdb_rating %></:item>
+  <:item title="Rt rating"><%= @quiz.rt_rating %></:item>
+  <:item title="Release year"><%= @quiz.release_year %></:item>
+  <:item title="Country of origin"><%= @quiz.country_of_origin %></:item>
+  <:item title="Actors"><%= @quiz.actors %></:item>
+</.list>
+
+<.back navigate={~p"/movie"}>Back to movie</.back>

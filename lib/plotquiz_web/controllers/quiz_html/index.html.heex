@@ -1,0 +1,30 @@
+<.header>
+  Listing Movie
+  <:actions>
+    <.link href={~p"/movie/new"}>
+      <.button>New Quiz</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="movie" rows={@movie} row_click={&JS.navigate(~p"/movie/#{&1}")}>
+  <:col :let={quiz} label="Name"><%= quiz.name %></:col>
+  <:col :let={quiz} label="Genres"><%= quiz.genres %></:col>
+  <:col :let={quiz} label="Description"><%= quiz.description %></:col>
+  <:col :let={quiz} label="Imdb rating"><%= quiz.imdb_rating %></:col>
+  <:col :let={quiz} label="Rt rating"><%= quiz.rt_rating %></:col>
+  <:col :let={quiz} label="Release year"><%= quiz.release_year %></:col>
+  <:col :let={quiz} label="Country of origin"><%= quiz.country_of_origin %></:col>
+  <:col :let={quiz} label="Actors"><%= quiz.actors %></:col>
+  <:action :let={quiz}>
+    <div class="sr-only">
+      <.link navigate={~p"/movie/#{quiz}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/movie/#{quiz}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={quiz}>
+    <.link href={~p"/movie/#{quiz}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
