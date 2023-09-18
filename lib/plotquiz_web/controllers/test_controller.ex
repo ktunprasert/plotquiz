@@ -8,34 +8,34 @@ defmodule PlotquizWeb.TestController do
     ~H"<%= @error %>"
   end
 
+  def render(%{game: %{lives: 0}} = assigns) do
+    :timer.cancel(assigns.game.t)
+
+    ~H"""
+    You are dead
+    """
+  end
+
   def render(assigns) do
-    if assigns.game.lives == 0 do
-      :timer.cancel(assigns.game.t)
+    ~H"""
+    <div phx-window-keyup="update_guess">
 
-      ~H"""
-      You are dead
-      """
-    else
-      ~H"""
-      <div phx-window-keyup="update_guess">
+    <pre class={"grid h-[40vh] place-items-center text-center tracking-[5px]"}><%= @game.hint %>
+    <code><%= @game.guesses |> MapSet.to_list() |> Enum.join(", ")  %></code>
+    </pre>
 
-      <pre class={"grid h-[40vh] place-items-center text-center tracking-[5px]"}><%= @game.hint %>
-      <code><%= @game.guesses |> MapSet.to_list() |> Enum.join(", ")  %></code>
-      </pre>
+    <div class={"grid w-full place-items-center text-center"}>
+        <blockquote><%= @game.quiz.genres |> Enum.join(", ") %></blockquote>
 
-      <div class={"grid w-full place-items-center text-center"}>
-          <blockquote><%= @game.quiz.genres |> Enum.join(", ") %></blockquote>
+        Your guess [<%= @game.guess %>]
+        <br/>
+        Total lives: <%= @game.lives %>
+        <br/>
+        Timer: <%= @game.seconds %> seconds
+    </div>
 
-          Your guess [<%= @game.guess %>]
-          <br/>
-          Total lives: <%= @game.lives %>
-          <br/>
-          Timer: <%= @game.seconds %> seconds
-      </div>
-
-      </div>
-      """
-    end
+    </div>
+    """
   end
 
   def mount(params, %{}, socket) do
