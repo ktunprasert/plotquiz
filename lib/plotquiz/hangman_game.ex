@@ -24,12 +24,16 @@ defmodule PlotQuiz.HangmanGame do
       guesses: MapSet.new(),
       seconds: @seconds,
       t: timer_start(),
-      lives: min(15, String.length(answer) + 3)
+      lives: min(15, String.length(answer))
     }
   end
 
   def timer_tick(game) do
     cond do
+      game.lives == 0 ->
+        :timer.cancel(game.t)
+        game
+
       game.seconds == 0 ->
         :timer.cancel(game.t)
         %__MODULE__{game | seconds: @seconds, t: timer_start(), lives: game.lives - 1}
@@ -50,16 +54,16 @@ defmodule PlotQuiz.HangmanGame do
   def update_guess(game, guess) do
     guesses = MapSet.put(game.guesses, guess)
 
-    lives =
+    {lives, seconds} =
       cond do
         guesses == game.guesses ->
-          game.lives
+          {game.lives, game.seconds}
 
         String.contains?(game.answer, guess) ->
-          game.lives
+          {game.lives, @seconds}
 
         true ->
-          game.lives - 1
+          {game.lives - 1, @seconds}
       end
 
     %__MODULE__{
@@ -67,9 +71,9 @@ defmodule PlotQuiz.HangmanGame do
       | guesses: guesses,
         lives: lives,
         guess: guess,
-        hint: update_hint(game.answer, guesses)
+        hint: update_hint(game.answer, guesses),
+        seconds: seconds
     }
-    |> dbg
   end
 
   defp update_hint(text, set) do
@@ -86,7 +90,6 @@ defmodule PlotQuiz.HangmanGame do
           letter
       end
     end
-    |> dbg
     |> Enum.join()
   end
 
