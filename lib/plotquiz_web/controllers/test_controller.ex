@@ -4,6 +4,10 @@ defmodule PlotquizWeb.TestController do
   alias Plotquiz.Movie
   alias PlotQuiz.HangmanGame
 
+  def render(%{error: _error} = assigns) do
+    ~H"<%= @error %>"
+  end
+
   def render(assigns) do
     if assigns.game.lives == 0 do
       :timer.cancel(assigns.game.t)
@@ -35,8 +39,13 @@ defmodule PlotquizWeb.TestController do
   end
 
   def mount(params, %{}, socket) do
-    game = HangmanGame.new_game(Movie.get_quiz!(params["id"]))
-    {:ok, assign(socket, game: game)}
+    try do
+      game = HangmanGame.new_game(Movie.get_quiz!(params["id"]))
+      {:ok, assign(socket, game: game)}
+    rescue
+      _e in Ecto.NoResultsError ->
+        {:ok, assign(socket, error: "Quiz not found")}
+    end
   end
 
   def handle_info(:tick, socket) do
