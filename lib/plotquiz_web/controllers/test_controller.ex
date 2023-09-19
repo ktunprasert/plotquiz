@@ -49,7 +49,7 @@ defmodule PlotquizWeb.TestController do
   end
 
   def handle_info(:tick, socket) do
-    game = HangmanGame.timer_tick(socket.assigns.game) |> dbg
+    game = HangmanGame.timer_tick(socket.assigns.game)
     {:noreply, assign(socket, game: game)}
   end
 
