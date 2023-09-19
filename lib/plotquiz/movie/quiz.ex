@@ -19,6 +19,6 @@ defmodule Plotquiz.Movie.Quiz do
   def changeset(quiz, attrs) do
     quiz
     |> cast(attrs, [:name, :genres, :description, :imdb_rating, :rt_rating, :release_year, :country_of_origin, :actors])
-    |> validate_required([:name, :genres, :description, :imdb_rating, :rt_rating, :release_year, :country_of_origin, :actors])
+    |> validate_required([:name, :genres])
   end
 end
